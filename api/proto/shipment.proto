@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package shipment.v1;
+option go_package = "shipment-service/api/proto/gen/shipment/v1;shipmentv1";
+
+import "google/protobuf/timestamp.proto";
+
+// service to manage transportation
+service ShipmentService {
+  rpc CreateShipment(CreateShipmentRequest) returns (CreateShipmentResponse);
+  rpc GetShipment(GetShipmentRequest) returns (GetShipmentResponse);
+  rpc UpdateShipmentStatus(UpdateShipmentStatusRequest) returns (UpdateShipmentStatusResponse);
+  rpc GetShipmentHistory(GetShipmentHistoryRequest) returns (GetShipmentHistoryResponse);
+}
+
+// life cycle of cargo
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  STATUS_PENDING = 1;
+  STATUS_PICKED_UP = 2;
+  STATUS_IN_TRANSIT = 3;
+  STATUS_DELIVERED = 4;
+}
+
+message Shipment {
+  string id = 1;
+  string reference_number = 2;
+  string origin = 3;
+  string destination = 4;
+  Status current_status = 5;
+  string driver_details = 6;
+  string unit_details = 7;
+  double shipment_amount = 8;
+  double driver_revenue = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message ShipmentEvent {
+  string id = 1;
+  string shipment_id = 2;
+  Status previous_status = 3;
+  Status new_status = 4;
+  string note = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+// Request && response messages
+
+message CreateShipmentRequest {
+  string reference_number = 1;
+  string origin = 2;
+  string destination = 3;
+  string driver_details = 4;
+  string unit_details = 5;
+  double shipment_amount = 6;
+  double driver_revenue = 7;
+}
+
+message CreateShipmentResponse {
+  Shipment shipment = 1;
+}
+
+message GetShipmentRequest {
+  string id = 1;
+}
+
+message GetShipmentResponse {
+  Shipment shipment = 1;
+}
+
+message UpdateShipmentStatusRequest {
+  string id = 1;
+  Status new_status = 2;
+  string note = 3;
+}
+
+message UpdateShipmentStatusResponse {
+  Shipment shipment = 1;
+  ShipmentEvent event = 2;
+}
+
+message GetShipmentHistoryRequest {
+  string id = 1;
+}
+
+message GetShipmentHistoryResponse {
+  repeated ShipmentEvent events = 1;
+}
