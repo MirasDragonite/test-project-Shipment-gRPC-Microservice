@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package shipment.v1;
-option go_package = "shipment-service/api/proto/gen/shipment/v1;shipmentv1";
+option go_package = "test-task-miras/api/proto/gen/shipment/v1;shipmentv1";
 
 import "google/protobuf/timestamp.proto";
 
