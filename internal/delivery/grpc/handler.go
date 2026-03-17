@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"test-task-miras/internal/domain"
+	"test-task-miras/internal/infrastructure/logger"
 	"test-task-miras/internal/usecase"
 
 	"google.golang.org/grpc/codes"
@@ -35,6 +36,7 @@ func (h *ShipmentHandler) CreateShipment(ctx context.Context, req *pb.CreateShip
 		if err == domain.ErrValidation {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
+		logger.L.Error("failed to create shipment in db", "error", err)
 		return nil, status.Error(codes.Internal, "failed to create shipment")
 	}
 
@@ -56,6 +58,7 @@ func (h *ShipmentHandler) UpdateShipmentStatus(ctx context.Context, req *pb.Upda
 		if err == domain.ErrInvalidStatusTransition {
 			return nil, status.Error(codes.FailedPrecondition, err.Error())
 		}
+		logger.L.Error("failed to update status in db", "error", err)
 		return nil, status.Error(codes.Internal, "failed to update status")
 	}
 
@@ -72,6 +75,7 @@ func (h *ShipmentHandler) GetShipment(ctx context.Context, req *pb.GetShipmentRe
 		if err == domain.ErrShipmentNotFound {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
+		logger.L.Error("failed to get shipment from db", "error", err)
 		return nil, status.Error(codes.Internal, "failed to get shipment")
 	}
 
@@ -84,6 +88,7 @@ func (h *ShipmentHandler) GetShipment(ctx context.Context, req *pb.GetShipmentRe
 func (h *ShipmentHandler) GetShipmentHistory(ctx context.Context, req *pb.GetShipmentHistoryRequest) (*pb.GetShipmentHistoryResponse, error) {
 	events, err := h.usecase.GetHistory(ctx, req.Id)
 	if err != nil {
+		logger.L.Error("failed to get history from db", "error", err)
 		return nil, status.Error(codes.Internal, "failed to get history")
 	}
 
